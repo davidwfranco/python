@@ -18,7 +18,14 @@ alterSessRepWeb = re.compile('CURRENT_SCHEMA.REPORTWEB')
 parser = OptionParser()
 
 parser.add_option("-s", "--script", dest="sqlScript",
-                    help="SQL Script to be formatted")
+                    help="SQL Script to be formatted",
+                    metavar="SQL_SCR")
+parser.add_option("-c", "--countries", dest="countries", action="append",
+                  type="string", help="Countries on wich th script will be executed in " +
+                                 " abbreviated form \"CO\", \"MX\", \"BR\", \"PE\", \"PA\" " +
+                                 "accepts multiple entries [-c <C1> -c <C2> ... -c <Cn>] or " + 
+                                 "[-c ALL] for all of them, Default = \"ALL\"",
+                    metavar="COUNTRY")
 
 (options, args) = parser.parse_args()
 
