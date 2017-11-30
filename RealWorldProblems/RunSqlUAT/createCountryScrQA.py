@@ -1,9 +1,9 @@
 import os
 import re
 
-baseScrPath = "/home/dwfranco/tool-belt/python/RealWorldProblems/RunSqlUAT/06-LAADMD-380.sql"
+baseScrPath = "/home/dwfranco/tool-belt/python/RealWorldProblems/RunSqlUAT/14-LAADMD-386.sql"
 
-countries = ["CO", "PA"]
+countries = ["CO", "PA", "MX", "BR", "PE"]
 
 spool = re.compile('^spool[ ]+c..temp/', flags=re.IGNORECASE)
 alterSessBra = re.compile('CURRENT_SCHEMA.BRAXTS.CFG')
