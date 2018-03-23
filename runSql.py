@@ -4,7 +4,6 @@ from optparse import OptionParser
 
 # ------------ Function Definitions ------------ #
 
-
 def getAllOracleSids():
     oracleSids = []
     p1 = Popen(["ps", "-ef"], stdout=PIPE)
@@ -20,26 +19,22 @@ def getAllOracleSids():
             oracleSids.append(line.split("_")[-1])
     return oracleSids
 
-
 def checkSid(instances):
     for instance in instances:
         if instance not in getAllOracleSids():
             parser.error("Instance \"%s\" not a valid oracle sid" % (instance))
     return True
 
-
 def checkScript(sqlFile):
     if not os.path.isfile(sqlFile):
         parser.error("File \"%s\" not found." % (os.path.abspath(sqlFile)))
     return True
-
 
 def runSqlQuery(sqlCommand, connectString, instanceName):
     session = Popen(['sqlplus', '-S', connectString],
                     stdin=PIPE, stdout=PIPE, stderr=PIPE)
     session.stdin.write(sqlCommand)
     return session.communicate()
-
 
 # ------------ Main Routine ------------ #
 
