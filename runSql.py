@@ -10,7 +10,7 @@ def getAllOracleSids():
     p1 = Popen(["ps", "-ef"], stdout=PIPE)
     p2 = Popen(["grep", "pmon"], stdin=p1.stdout, stdout=PIPE)
     p3 = Popen(["grep", "-v", "grep"], stdin=p2.stdout, stdout=PIPE)
-    p4 = Popen(["grep", "-v", "+ASM"], stdin=p3.stdout, stdout=PIPE)
+    p4 = Popen(["grep", "-v", "ASM"], stdin=p3.stdout, stdout=PIPE)
     p3.stdout.close()
     p2.stdout.close()
     p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
@@ -43,10 +43,8 @@ def runSqlQuery(sqlCommand, connectString, instanceName):
 
 # ------------ Main Routine ------------ #
 
-
 instanceNames = []
 parser = OptionParser()
-
 
 parser.add_option("-u", "--user", dest="dbUser",
                   help="database user", metavar="DB_USER")
@@ -66,8 +64,7 @@ if not options.instanceNames or not options.sqlScript:
     parser.error("Incorrect Number of Arguments")
 elif "ALL" in str(options.instanceNames).upper():
     checkScript(options.sqlScript)
-    print "Instances: All"
-    print "Script: \"%s\"" % (str(os.path.abspath(options.sqlScript)))
+    print("Instances: All")
 else:
     checkScript(options.sqlScript)
     checkSid(options.instanceNames)
@@ -79,33 +76,38 @@ else:
 
 sqlCommand = "@" + options.sqlScript
 
-logFile = "log_" + options.sqlScript.replace(".sql", "")
+if os.path.dirname(options.sqlScript):
+    logFile = os.path.dirname(options.sqlScript) + "/log_" + os.path.split(options.sqlScript)[1].replace(".sql", "")
+else:
+    logFile = "log_" + os.path.split(options.sqlScript)[1].replace(".sql", "")
 
 if os.path.isfile(logFile):
     os.remove(logFile)
 
 with open(logFile, 'a') as logF:
-    if "ALL" in options.instanceNames:
+    if "ALL" in str(options.instanceNames).upper():
         for sid in getAllOracleSids():
             os.environ['ORACLE_SID'] = sid
             queryResult, queryError = runSqlQuery(sqlCommand, connectString,
                                                   options.instanceNames[0])
-            logF.write("Result Set %s: \n%s\n" % (sid,
+            logF.write("Result Set %s: \n%s" % (sid,
                                                   # time.strftime("%Y%m%d-%H%M"),
                                                   queryResult))
             if queryError:
-                logF.write("Eror %s: \n%s\n" % (sid,
+                logF.write("Eror %s: \n%s" % (sid,
                                                 # time.strftime("%Y%m%d-%H%M"),
                                                 queryError))
     else:
+        print("Instance: %s" % str(options.instanceNames))
         for sid in options.instanceNames:
             os.environ['ORACLE_SID'] = sid
             queryResult, queryError = runSqlQuery(sqlCommand, connectString,
                                                   options.instanceNames[0])
-            logF.write("Result Set %s: \n%s\n" % (sid,
+            logF.write("Result Set %s: \n%s" % (sid,
                                                   # time.strftime("%Y%m%d-%H%M"),
                                                   queryResult))
             if queryError:
-                logF.write("Eror %s: \n%s\n" % (sid,
+                logF.write("Eror %s: \n%s" % (sid,
                                                 # time.strftime("%Y%m%d-%H%M"),
                                                 queryError))
+
